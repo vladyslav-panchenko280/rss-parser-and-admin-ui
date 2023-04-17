@@ -26,9 +26,11 @@ Used technologies:
 - Next.js
 - PrimeReact
 `
+## Clone application
+1. `git clone https://github.com/vladyslav-panchenko280/rss-parser-and-admin-ui.git`
+2.  git submodule add https://github.com/vladyslav-panchenko280/client.git
 
 ## Run application
-
 1. Open a new bash shell
 2. Execute `./makefile.sh` and press 1 to install
 3. Execute `./makefile.sh` and press 2 to build
