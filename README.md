@@ -41,3 +41,7 @@ Used technologies:
 3. Execute `npm run build && cd ./client && npm build`
 4. Execute `npm run start && cd ./client && npm run dev` or `npm run start && cd ./client && npm run start`
 5. Make API request using curl or any other suitable tool `curl -X GET http://localhost:3010/api/rssParse`
+
+## Get access
+1. Login: admin1; password: qwerty;
+2. Login: admin2; password: 12345;
