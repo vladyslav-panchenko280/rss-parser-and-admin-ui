@@ -28,7 +28,7 @@ Used technologies:
 `
 ## Clone application
 1. `git clone https://github.com/vladyslav-panchenko280/rss-parser-and-admin-ui.git`
-2.  git submodule add https://github.com/vladyslav-panchenko280/client.git
+2. `git submodule add https://github.com/vladyslav-panchenko280/client.git`
 
 ## Run application
 1. Open a new bash shell
