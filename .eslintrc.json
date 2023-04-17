@@ -1,0 +1,16 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "no-var": "error", // Require using let or const instead of var
+    "eqeqeq": "error", // Require using strict equality (=== and !==)
+    "no-empty-function": "error", // Forbid empty function declarations and expressions
+    "no-duplicate-imports": "error", // Forbid duplicate import statements
+    "no-useless-return": "error", // Forbid unnecessary return statements
+    "no-use-before-define": "error" // Forbid using variables or functions before they are defined
+  }
+}
