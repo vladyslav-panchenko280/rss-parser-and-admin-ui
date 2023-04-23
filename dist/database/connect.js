@@ -18,8 +18,22 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config(); // Load variables from file .env.
 const connectToDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield mongoose_1.default.connect(process.env.DATABASE_MONGO);
-        console.log('Connected to MongoDB');
+        mongoose_1.default.connection.on('connecting', () => {
+            console.log(`MongoDB: connecting.`);
+        });
+        mongoose_1.default.connection.on('connected', () => {
+            console.log('MongoDB: connected.');
+        });
+        mongoose_1.default.connection.on('disconnecting', () => {
+            console.log('MongoDB: disconnecting.');
+        });
+        mongoose_1.default.connection.on('disconnected', () => {
+            console.log('MongoDB: disconnected.');
+        });
+        if (mongoose_1.default.connection.readyState !== 1 &&
+            mongoose_1.default.connection.readyState !== 2) {
+            yield mongoose_1.default.connect(process.env.DATABASE_MONGO);
+        }
     }
     catch (error) {
         console.error('Error connecting to MongoDB: ', error.message);

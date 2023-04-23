@@ -19,20 +19,16 @@ const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         // Find the document by ID and delete it
         const deletedPost = yield model_1.default.deleteMany({ guid: req.params.guid });
-        // Check if the document was found and deleted
-        if (deletedPost) {
-            // Return a deleted object in the response
-            res.json(deletedPost);
-        }
-        else {
-            // If the document was not found, return a 404 error
-            res.status(404).json({ error: 'Post not found' });
-        }
+        res.json({
+            message: 'Post has been successfully deleted',
+            data: deletedPost,
+        });
     }
-    catch (err) {
+    catch (error) {
         // Handle any errors that occur during the delete operation
-        console.error('Failed to delete post by ID:', err);
-        res.status(500).json({ error: 'Failed to delete post by ID' });
+        res
+            .status(500)
+            .json({ message: 'Failed to delete post by ID', data: req.params.guid });
     }
 });
 exports.deletePost = deletePost;

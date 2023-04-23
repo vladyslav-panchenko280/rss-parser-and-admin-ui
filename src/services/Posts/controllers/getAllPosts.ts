@@ -1,4 +1,5 @@
 import PostsModel from '../model';
+import type { Response } from '../..';
 
 type SortOption = 'isoDate' | 'creator' | 'title';
 type SortOrder = 1 | -1;
@@ -15,51 +16,53 @@ interface GetFeedRequest {
   };
 }
 
-interface Response {
-  json: (data: any) => void;
-  status: (code: number) => Response;
-}
+const validateValue = (
+  filterValue: FilterValue,
+  filterOption: FilterOption
+) => {
+  if (filterValue)
+    return { [filterOption]: { $regex: filterValue, $options: 'i' } };
+  else return {};
+};
 
 // Parse and return feed
-const getAllPosts = async (req: GetFeedRequest, res: Response) => {
+const getAllPosts = async (
+  req: GetFeedRequest,
+  res: Response
+): Promise<void> => {
   try {
     // Implementation of pagination. We start from 1 page and have 10 items limit per page
     const pageSize = 10; // Count of posts per page
-    const currentPage = parseInt(req.query.page) || 1; // Current page, which we have gotten from user
-    const startIndex = (currentPage - 1) * pageSize; // From which item starts page
+    const currentPage: number = parseInt(req.query.page) || 1; // Current page, which we have gotten from user
+    const startIndex: number = (currentPage - 1) * pageSize; // From which item starts page
 
     // Sorting options. There are 3 options: 'alphabeticallyName', 'isoDate', 'alphabeticallyTitle'
-    const sortOption = req.query.sortBy || 'isoDate';
+    const sortOption: SortOption = req.query.sortBy || 'isoDate';
 
     // Sorting order. There are 2 options: -1, 1
-    const sortOrder = req.query.sortOrder || 1;
+    const sortOrder: SortOrder = req.query.sortOrder || 1;
 
     // Filter options. There are 4 options: 'title', 'name', 'date', 'categories'
-    const filterOption = req.query.filterBy || 'creator';
+    const filterOption: FilterOption = req.query.filterBy || 'creator';
 
     // Filter value. By default it is ''
-    const filterValue = req.query.filterValue || '';
+    const filterValue: FilterValue = req.query.filterValue || '';
 
     // Get total count of all Posts
-    const totalPosts = await PostsModel.countDocuments(
-      filterValue
-        ? { [filterOption]: { $regex: filterValue, $options: 'i' } }
-        : {}
+    const totalPosts: number = await PostsModel.countDocuments(
+      validateValue(filterValue, filterOption)
     );
-    const totalPages = Math.ceil(totalPosts / pageSize); // Calculate total count of pages
+    const totalPages: number = Math.ceil(totalPosts / pageSize); // Calculate total count of pages
 
     // Our algorithm of getting posts on database side.
     const data = await PostsModel
       // We filter by regexp if we get anything from req.query.filterValue. If no, we find all posts
-      .find(
-        filterValue !== ''
-          ? { [filterOption]: { $regex: filterValue, $options: 'i' } }
-          : {}
-      )
+      .find(validateValue(filterValue, filterOption))
       // Sort posts by sortOptions and orders
       .sort({ [sortOption]: sortOrder })
       // Pagination options
       .skip(startIndex)
+      // Limit page
       .limit(pageSize)
       .exec();
 
@@ -73,10 +76,12 @@ const getAllPosts = async (req: GetFeedRequest, res: Response) => {
     };
 
     // Return paginated posts to the client
-    return res.json({ info, data });
-  } catch (err) {
-    // Return an error response if parsing was failed
-    return res.json({ err });
+    return res.json({
+      message: 'Posts have been successfully found',
+      data: { info, data },
+    });
+  } catch (error: any) {
+    return res.json({ message: error.message, data: {} });
   }
 };
 

@@ -23,7 +23,9 @@ const authenticationUser = (req, res) => __awaiter(void 0, void 0, void 0, funct
     const { username, password } = req.body;
     // Validate user input
     if (!username || !password) {
-        return res.status(400).json({ message: 'All input is required' });
+        return res
+            .status(400)
+            .json({ message: 'All input is required', data: req.body });
     }
     // Validate if user exist in our database
     const admin = yield model_1.default.findOne({ username });
@@ -33,10 +35,14 @@ const authenticationUser = (req, res) => __awaiter(void 0, void 0, void 0, funct
             expiresIn: '7d', // Lifetime of token - 7 days from creating time
         });
         // Send token to user
-        return res.status(200).json(token);
+        return res
+            .status(200)
+            .json({ message: 'Token has been successfully gotten', data: token });
     }
     // Return an error response if the username or password is invalid
-    return res.status(401).json({ message: 'Invalid username or password' });
+    return res
+        .status(401)
+        .json({ message: 'Invalid username or password', data: req.body });
 });
 exports.authenticationUser = authenticationUser;
 //# sourceMappingURL=authenticationAdmin.js.map

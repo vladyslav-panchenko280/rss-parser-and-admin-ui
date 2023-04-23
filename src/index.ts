@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express'; // Fast, unopinionated, minimalist web framework for Node.js.
 import router from './services'; // Takes our Router
 import bodyParser from 'body-parser'; // Node.js body parsing middleware.
-import cors from 'cors'; //
+import cors from 'cors';
 import { connectToDatabase } from './database/connect';
 
 dotenv.config(); // Load variables from file .env.

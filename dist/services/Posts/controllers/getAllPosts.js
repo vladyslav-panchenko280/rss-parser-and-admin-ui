@@ -14,6 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllPosts = void 0;
 const model_1 = __importDefault(require("../model"));
+const validateValue = (filterValue, filterOption) => {
+    if (filterValue)
+        return { [filterOption]: { $regex: filterValue, $options: 'i' } };
+    else
+        return {};
+};
 // Parse and return feed
 const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -30,20 +36,17 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         // Filter value. By default it is ''
         const filterValue = req.query.filterValue || '';
         // Get total count of all Posts
-        const totalPosts = yield model_1.default.countDocuments(filterValue
-            ? { [filterOption]: { $regex: filterValue, $options: 'i' } }
-            : {});
+        const totalPosts = yield model_1.default.countDocuments(validateValue(filterValue, filterOption));
         const totalPages = Math.ceil(totalPosts / pageSize); // Calculate total count of pages
         // Our algorithm of getting posts on database side.
         const data = yield model_1.default
             // We filter by regexp if we get anything from req.query.filterValue. If no, we find all posts
-            .find(filterValue !== ''
-            ? { [filterOption]: { $regex: filterValue, $options: 'i' } }
-            : {})
+            .find(validateValue(filterValue, filterOption))
             // Sort posts by sortOptions and orders
             .sort({ [sortOption]: sortOrder })
             // Pagination options
             .skip(startIndex)
+            // Limit page
             .limit(pageSize)
             .exec();
         // All statistic information
@@ -55,11 +58,13 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             totalPages,
         };
         // Return paginated posts to the client
-        return res.json({ info, data });
+        return res.json({
+            message: 'Posts have been successfully found',
+            data: { info, data },
+        });
     }
-    catch (err) {
-        // Return an error response if parsing was failed
-        return res.json({ err });
+    catch (error) {
+        return res.json({ message: error.message, data: {} });
     }
 });
 exports.getAllPosts = getAllPosts;

@@ -7,7 +7,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express")); // Fast, unopinionated, minimalist web framework for Node.js.
 const services_1 = __importDefault(require("./services")); // Takes our Router
 const body_parser_1 = __importDefault(require("body-parser")); // Node.js body parsing middleware.
-const cors_1 = __importDefault(require("cors")); //
+const cors_1 = __importDefault(require("cors"));
 const connect_1 = require("./database/connect");
 dotenv_1.default.config(); // Load variables from file .env.
 const app = (0, express_1.default)(); // Create an Express application.

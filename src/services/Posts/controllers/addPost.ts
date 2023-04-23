@@ -1,23 +1,18 @@
-import { Post } from '../interface';
-import PostsModel from '../model';
+import PostsModel, { Post } from '../model';
+import type { Response } from '../..';
 
 interface addRequest {
   body: Post;
 }
 
-interface Response {
-  json: (data: any) => void;
-  status: (code: number) => Response;
-}
-
 // Add post to the database
-const addPost = async (req: addRequest, res: Response) => {
+const addPost = async (req: addRequest, res: Response): Promise<void> => {
   try {
     // Insert object model
     const newPost = await PostsModel.insertMany(req.body);
-    res.json(newPost);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+    res.json({ message: 'Post has been successfully added', data: newPost });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, data: req.body });
   }
 };
 

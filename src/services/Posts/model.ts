@@ -1,5 +1,18 @@
 import mongoose from 'mongoose';
 
+export interface Post {
+  creator: string;
+  title: string;
+  link: string;
+  pubDate: string;
+  'dc:creator': string;
+  content: string;
+  contentSnippet: string;
+  guid: string;
+  categories: string[];
+  isoDate: string;
+}
+
 // JSON Schema for admins
 const PostSchema = new mongoose.Schema({
   creator: {

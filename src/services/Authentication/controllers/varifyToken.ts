@@ -1,12 +1,8 @@
-import jwt, { VerifyErrors, VerifyOptions } from 'jsonwebtoken'; // JSON Web Tokens are an open, industry standard method for representing claims securely between two parties.
+import jwt from 'jsonwebtoken'; // JSON Web Tokens are an open, industry standard method for representing claims securely between two parties.
 import dotenv from 'dotenv';
+import type { Response } from '../..';
 
 dotenv.config(); // Load variables from file .env.
-
-interface Response {
-  json: (data: any) => void;
-  status: (code: number) => Response;
-}
 
 // Create middleware for authentication
 export const verifyToken = (req: any, res: Response, next: any) => {
@@ -15,13 +11,13 @@ export const verifyToken = (req: any, res: Response, next: any) => {
   if (!token) {
     return res
       .status(403)
-      .json({ message: 'A token is required for authentication' });
+      .json({ message: 'A token is required for authentication', data: token });
   }
   try {
     // Verify and pass request
     jwt.verify(token, process.env.JWT_SECRET as string);
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid Token' });
+    return res.status(401).json({ message: 'Invalid Token', data: token });
   }
   return next();
 };

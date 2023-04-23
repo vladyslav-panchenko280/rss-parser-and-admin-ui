@@ -13,14 +13,14 @@ const verifyToken = (req, res, next) => {
     if (!token) {
         return res
             .status(403)
-            .json({ message: 'A token is required for authentication' });
+            .json({ message: 'A token is required for authentication', data: token });
     }
     try {
         // Verify and pass request
         jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
     }
     catch (err) {
-        return res.status(401).json({ message: 'Invalid Token' });
+        return res.status(401).json({ message: 'Invalid Token', data: token });
     }
     return next();
 };

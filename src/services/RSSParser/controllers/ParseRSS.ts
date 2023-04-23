@@ -1,10 +1,9 @@
 import Parser from 'rss-parser';
 import PostsModel from '../../Posts/model';
+import type { Response } from '../..';
+import dotenv from 'dotenv';
 
-interface Response {
-  json: (data: any) => void;
-  status: (code: number) => Response;
-}
+dotenv.config(); // Load variables from file .env.
 
 const parser = new Parser();
 
@@ -12,11 +11,11 @@ const parser = new Parser();
 const parseRSS = async (req: any, res: Response) => {
   try {
     return await parser.parseURL(
-      'https://lifehacker.com/rss',
-      async (err, feed) => {
+      process.env.RSS_FEED as string,
+      async (err: any, feed) => {
         if (err) {
           // Return an error response if parsing was failed
-          return res.json({ err });
+          return res.json({ message: err.message, data: {} });
         } else {
           // Get items from parsed feed
           const { items } = feed;
@@ -32,9 +31,11 @@ const parseRSS = async (req: any, res: Response) => {
             );
           });
 
-          return res.json(
-            'RSS Feed have been already parsed and pull to the database'
-          );
+          return res.json({
+            message:
+              'RSS Feed have been already parsed and pull to the database',
+            data: items,
+          });
         }
       }
     );

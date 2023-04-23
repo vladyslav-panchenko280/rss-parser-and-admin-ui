@@ -18,20 +18,14 @@ const model_1 = __importDefault(require("../model"));
 const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Fetch the post by ID from the PostsModel collection
-        const rss = yield model_1.default.find({ guid: req.params.guid });
-        // If the post is found, send it as JSON response
-        if (rss) {
-            res.json(rss);
-        }
-        else {
-            // If the post is not found, send a 404 error response
-            res.status(404).json({ error: 'Post not found' });
-        }
+        const post = yield model_1.default.find({ guid: req.params.guid });
+        res.json({ message: 'Post has been successfully found', data: post });
     }
-    catch (err) {
+    catch (error) {
         // If an error occurs while fetching the post, send a 500 error response
-        console.error('Failed to fetch RSS by id:', err);
-        res.status(500).json({ error: 'Failed to fetch post by id' });
+        res
+            .status(500)
+            .json({ message: 'Failed to fetch post by id', data: req.params.guid });
     }
 });
 exports.getPost = getPost;

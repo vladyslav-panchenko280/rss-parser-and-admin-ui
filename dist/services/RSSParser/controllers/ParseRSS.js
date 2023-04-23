@@ -15,14 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseRSS = void 0;
 const rss_parser_1 = __importDefault(require("rss-parser"));
 const model_1 = __importDefault(require("../../Posts/model"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config(); // Load variables from file .env.
 const parser = new rss_parser_1.default();
 // Parse RSS feed and save to database
 const parseRSS = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield parser.parseURL('https://lifehacker.com/rss', (err, feed) => __awaiter(void 0, void 0, void 0, function* () {
+        return yield parser.parseURL(process.env.RSS_FEED, (err, feed) => __awaiter(void 0, void 0, void 0, function* () {
             if (err) {
                 // Return an error response if parsing was failed
-                return res.json({ err });
+                return res.json({ message: err.message, data: {} });
             }
             else {
                 // Get items from parsed feed
@@ -33,7 +35,10 @@ const parseRSS = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 }).catch((err) => {
                     console.error(`Prevent dublicates: ${err.writeErrors.length}, Objects was added to database: ${51 - err.writeErrors.length}`);
                 });
-                return res.json('RSS Feed have been already parsed and pull to the database');
+                return res.json({
+                    message: 'RSS Feed have been already parsed and pull to the database',
+                    data: items,
+                });
             }
         }));
     }

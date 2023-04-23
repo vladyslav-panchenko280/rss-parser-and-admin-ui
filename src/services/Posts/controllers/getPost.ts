@@ -1,33 +1,18 @@
 import PostsModel from '../model';
-
-interface ReadRequest {
-  params: {
-    guid: string;
-  };
-}
-
-interface Response {
-  json: (data: any) => void;
-  status: (code: number) => Response;
-}
+import type { Response } from '../..';
+import type { getPostById } from '../routes';
 
 // Read post by id
-const getPost = async (req: ReadRequest, res: Response) => {
+const getPost = async (req: getPostById, res: Response): Promise<void> => {
   try {
     // Fetch the post by ID from the PostsModel collection
-    const rss = await PostsModel.find({ guid: req.params.guid });
-
-    // If the post is found, send it as JSON response
-    if (rss) {
-      res.json(rss);
-    } else {
-      // If the post is not found, send a 404 error response
-      res.status(404).json({ error: 'Post not found' });
-    }
-  } catch (err) {
+    const post = await PostsModel.find({ guid: req.params.guid });
+    res.json({ message: 'Post has been successfully found', data: post });
+  } catch (error) {
     // If an error occurs while fetching the post, send a 500 error response
-    console.error('Failed to fetch RSS by id:', err);
-    res.status(500).json({ error: 'Failed to fetch post by id' });
+    res
+      .status(500)
+      .json({ message: 'Failed to fetch post by id', data: req.params.guid });
   }
 };
 

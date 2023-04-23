@@ -19,10 +19,10 @@ const addPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Insert object model
         const newPost = yield model_1.default.insertMany(req.body);
-        res.json(newPost);
+        res.json({ message: 'Post has been successfully added', data: newPost });
     }
-    catch (err) {
-        res.status(500).json({ message: err.message });
+    catch (error) {
+        res.status(500).json({ message: error.message, data: req.body });
     }
 });
 exports.addPost = addPost;

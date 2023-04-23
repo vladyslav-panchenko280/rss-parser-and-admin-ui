@@ -1,16 +1,11 @@
-import PostsModel from '../model';
-import { Post } from '../interface';
+import PostsModel, { Post } from '../model';
+import type { Response } from '../..';
 
 interface UpdateRequest {
   params: {
     guid: string;
   };
   body: Post;
-}
-
-interface Response {
-  json: (data: any) => void;
-  status: (code: number) => Response;
 }
 
 // Update post by id
@@ -22,16 +17,13 @@ const updatePost = async (req: UpdateRequest, res: Response) => {
       req.body, // Update data to be applied
       { returnOriginal: false }
     );
-
-    // Return the updated document in the response
-    if (updatedPost) {
-      res.json(updatedPost);
-    } else {
-      res.status(404).json({ error: 'RSS not found' });
-    }
-  } catch (err) {
+    res.json({
+      message: 'Post has been successfully updated',
+      data: updatedPost,
+    });
+  } catch (error: any) {
     // Handle any errors
-    res.status(500).json({ error: err });
+    res.status(500).json({ message: error.message, data: {} });
   }
 };
 
