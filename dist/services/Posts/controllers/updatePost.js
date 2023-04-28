@@ -14,8 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePost = void 0;
 const model_1 = __importDefault(require("../model"));
+const validatePostStructure_1 = require("../validators/validatePostStructure");
 // Update post by id
 const updatePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // Validate structure of the post
+    if (!(yield (0, validatePostStructure_1.validatePostStructure)(req.body))) {
+        return res.status(400).json({
+            message: 'Invalid post structure for updating. All inputs should be filled',
+            data: req.body,
+        });
+    }
     try {
         // Find the document by ID, update its contents, and return the updated document
         const updatedPost = yield model_1.default.findOneAndUpdate({ guid: req.params.guid }, // Filter to select the document by its guid

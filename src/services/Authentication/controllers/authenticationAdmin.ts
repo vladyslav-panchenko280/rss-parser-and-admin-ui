@@ -1,12 +1,19 @@
 import jwt from 'jsonwebtoken'; // JSON Web Tokens are an open, industry standard method for representing claims securely between two parties.
 import dotenv from 'dotenv';
-import AdminModel, { Admin } from '../model';
-import bcryptjs from 'bcryptjs';
+import AdminModel from '../model';
+
 import type { Response } from '../..';
+import { checkAuthBody } from '../validators/checkAuthBody';
+import { varifyEncryptedPassword } from '../validators/varifyEncryptedPassword';
 
 dotenv.config(); // Load variables from file .env.
 
-interface AuthRequest {
+export interface Admin {
+  username: string;
+  password: string;
+}
+
+export interface AuthRequest {
   body: {
     username: string;
     password: string;
@@ -15,10 +22,10 @@ interface AuthRequest {
 
 export const authenticationUser = async (req: AuthRequest, res: Response) => {
   // Get username and password from request body
-  const { username, password } = req.body;
+  const { username } = req.body;
 
   // Validate user input
-  if (!username || !password) {
+  if (!(await checkAuthBody(req.body))) {
     return res
       .status(400)
       .json({ message: 'All input is required', data: req.body });
@@ -27,15 +34,14 @@ export const authenticationUser = async (req: AuthRequest, res: Response) => {
   // Validate if user exist in our database
   const admin: Admin | null = await AdminModel.findOne({ username });
 
-  if (admin && (await bcryptjs.compare(password, admin.password))) {
+  if (
+    admin &&
+    (await varifyEncryptedPassword(req.body.password, admin.password))
+  ) {
     // Create token
-    const token = jwt.sign(
-      { username: username, password: password },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: '7d', // Lifetime of token - 7 days from creating time
-      }
-    );
+    const token = jwt.sign(req.body, process.env.JWT_SECRET as string, {
+      expiresIn: '1d', // Lifetime of token - 1 day from creating time
+    });
 
     // Send token to user
     return res

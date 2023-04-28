@@ -1,9 +1,15 @@
 import PostsModel from '../model';
 import type { Response } from '../..';
 import type { getPostById } from '../routes';
+import { validatePostParams } from '../validators/validatePostParams';
 
 // Read post by id
 const getPost = async (req: getPostById, res: Response): Promise<void> => {
+  // Validate params of the post
+  if (!(await validatePostParams(req.params))) {
+    return res.status(400).json({ message: 'Invalid guid', data: req.params });
+  }
+
   try {
     // Fetch the post by ID from the PostsModel collection
     const post = await PostsModel.find({ guid: req.params.guid });

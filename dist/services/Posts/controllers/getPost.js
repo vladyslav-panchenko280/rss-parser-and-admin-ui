@@ -14,8 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPost = void 0;
 const model_1 = __importDefault(require("../model"));
+const validatePostParams_1 = require("../validators/validatePostParams");
 // Read post by id
 const getPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // Validate params of the post
+    if (!(yield (0, validatePostParams_1.validatePostParams)(req.params))) {
+        return res.status(400).json({ message: 'Invalid guid', data: req.params });
+    }
     try {
         // Fetch the post by ID from the PostsModel collection
         const post = yield model_1.default.find({ guid: req.params.guid });

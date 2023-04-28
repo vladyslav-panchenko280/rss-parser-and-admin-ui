@@ -16,23 +16,25 @@ exports.authenticationUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken")); // JSON Web Tokens are an open, industry standard method for representing claims securely between two parties.
 const dotenv_1 = __importDefault(require("dotenv"));
 const model_1 = __importDefault(require("../model"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const checkAuthBody_1 = require("../validators/checkAuthBody");
+const varifyEncryptedPassword_1 = require("../validators/varifyEncryptedPassword");
 dotenv_1.default.config(); // Load variables from file .env.
 const authenticationUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Get username and password from request body
-    const { username, password } = req.body;
+    const { username } = req.body;
     // Validate user input
-    if (!username || !password) {
+    if (!(yield (0, checkAuthBody_1.checkAuthBody)(req.body))) {
         return res
             .status(400)
             .json({ message: 'All input is required', data: req.body });
     }
     // Validate if user exist in our database
     const admin = yield model_1.default.findOne({ username });
-    if (admin && (yield bcryptjs_1.default.compare(password, admin.password))) {
+    if (admin &&
+        (yield (0, varifyEncryptedPassword_1.varifyEncryptedPassword)(req.body.password, admin.password))) {
         // Create token
-        const token = jsonwebtoken_1.default.sign({ username: username, password: password }, process.env.JWT_SECRET, {
-            expiresIn: '7d', // Lifetime of token - 7 days from creating time
+        const token = jsonwebtoken_1.default.sign(req.body, process.env.JWT_SECRET, {
+            expiresIn: '1d', // Lifetime of token - 1 day from creating time
         });
         // Send token to user
         return res
