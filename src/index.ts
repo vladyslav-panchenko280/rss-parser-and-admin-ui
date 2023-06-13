@@ -3,6 +3,7 @@ import express from 'express'; // Fast, unopinionated, minimalist web framework 
 import router from './services'; // Takes our Router
 import bodyParser from 'body-parser'; // Node.js body parsing middleware.
 import cors from 'cors';
+import compression from 'compression';
 import { connectToDatabase } from './database/connect';
 
 dotenv.config(); // Load variables from file .env.
@@ -10,6 +11,9 @@ dotenv.config(); // Load variables from file .env.
 const app = express(); // Create an Express application.
 
 connectToDatabase(); // Connect to MongoDB database
+
+// Enable gzip compression
+app.use(compression());
 
 // Middleware
 app.options('*', cors());
